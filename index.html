@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kindle Local Sync — Kindle highlights into Obsidian, entirely offline</title>
+  <meta name="description" content="A desktop Obsidian plugin that reads My Clippings.txt from your USB-connected Kindle and writes one tidy Markdown note per book. No account, no cloud, no telemetry." />
+  <meta name="color-scheme" content="dark" />
+  <meta name="theme-color" content="#0f1115" />
+
+  <!-- Favicon: the brand mark from the header, inlined so it costs no request. -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236366f1' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z'/%3E%3Cpath d='M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z'/%3E%3C/svg%3E" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Kindle Local Sync" />
+  <meta property="og:locale" content="en" />
+  <meta property="og:title" content="Kindle Local Sync — Kindle highlights into Obsidian, entirely offline" />
+  <meta property="og:description" content="Plug in the Kindle. Keep what you want. One tidy Markdown note per book. No account, no cloud, no telemetry." />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Kindle Local Sync — Kindle highlights into Obsidian, entirely offline" />
+  <meta name="twitter:description" content="Plug in the Kindle. Keep what you want. One tidy Markdown note per book. No account, no cloud, no telemetry." />
+
+  <!-- TODO once the deploy domain is known — these all require absolute URLs:
+         <link rel="canonical" href="https://DOMAIN/" />
+         <meta property="og:url" content="https://DOMAIN/" />
+         <meta property="og:image" content="https://DOMAIN/assets/shot-en-1.webp" />
+       and then switch twitter:card above to "summary_large_image".
+
+       TODO hreflang: the three languages share one URL and are switched with CSS,
+       so hreflang cannot be declared as-is — search engines will only index the
+       English copy. Declaring it needs one real URL per language (e.g. /, /zh-cn/,
+       /zh-tw/), which is an architecture change, not a metadata fix. -->
+
+  <!-- Gates the scroll-reveal styles: if this never runs, nothing is hidden. -->
+  <script>document.documentElement.classList.add('js');</script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <header class="header">
+    <div class="container nav-wrapper">
+      <a class="brand" href="#top">
+        <span class="brand-mark">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+          </svg>
+        </span>
+        <span class="brand-name">Kindle Local Sync</span>
+      </a>
+      
+      <div class="nav-controls">
+        <nav class="nav-links">
+          <a href="#how" class="nav-link">
+            <span data-i18n="en">How it works</span>
+            <span data-i18n="zh-CN">工作原理</span>
+            <span data-i18n="zh-TW">運作方式</span>
+          </a>
+          <a href="#safe" class="nav-link">
+            <span data-i18n="en">Safety</span>
+            <span data-i18n="zh-CN">安全</span>
+            <span data-i18n="zh-TW">安全</span>
+          </a>
+          
+          
+        </nav>
+        
+        <button class="lang-toggle" id="langToggle" aria-label="Switch to Simplified Chinese" title="Switch to Simplified Chinese">
+          EN
+        </button>
+
+        <button class="menu-toggle" id="menuToggle" aria-label="Toggle mobile menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Menu Overlay -->
+  <div class="mobile-menu" id="mobileMenu">
+    <nav class="mobile-nav-links">
+      <a href="#how" class="mobile-nav-link">
+        <span data-i18n="en">How it works</span>
+        <span data-i18n="zh-CN">工作原理</span>
+        <span data-i18n="zh-TW">運作方式</span>
+      </a>
+      <a href="#safe" class="mobile-nav-link">
+        <span data-i18n="en">Safety</span>
+        <span data-i18n="zh-CN">安全</span>
+        <span data-i18n="zh-TW">安全</span>
+      </a>
+      
+      
+    </nav>
+  </div>
+
+  <main id="top">
+    <!-- HERO (2 Columns) -->
+    <section class="hero section-spacing reveal-fade-up">
+      <div class="container hero-split">
+        <!-- L: Text -->
+        <div class="hero-text-content">
+          <div class="badges">
+            <span class="badge accent">Obsidian plugin</span>
+            <span class="badge">v0.1.4</span>
+            <span class="badge">MIT</span>
+          </div>
+          
+          <h1 class="hero-title">
+            Kindle <span class="text-purple">Local</span> Sync
+          </h1>
+          
+          <p class="hero-sub title-sub">
+            <span data-i18n="en">Bring your Kindle <span class="bg-yellow-pill">highlights</span> into Obsidian.</span>
+            <span data-i18n="zh-CN">将您的 Kindle <span class="bg-yellow-pill">标注</span>导入 Obsidian。</span>
+            <span data-i18n="zh-TW">將您的 Kindle <span class="bg-yellow-pill">標註</span>匯入 Obsidian。</span>
+          </p>
+          <p class="hero-sub" style="font-size: 1rem; margin-top: -16px;">
+            <span data-i18n="en">Plug in the Kindle. Keep what you want. One tidy Markdown note per book.</span>
+            <span data-i18n="zh-CN">连接 Kindle。保留所需。每本书生成一篇整洁的 Markdown 笔记。</span>
+            <span data-i18n="zh-TW">連接 Kindle。保留所需。每本書產生一篇整潔的 Markdown 筆記。</span>
+          </p>
+          
+          
+          <div class="hero-flow">
+            <span class="flow-step mono">My Clippings.txt</span>
+            <span class="flow-arrow">&rarr;</span>
+            <span class="flow-step">
+              <span data-i18n="en">Review</span>
+              <span data-i18n="zh-CN">审阅</span>
+              <span data-i18n="zh-TW">審閱</span>
+            </span>
+            <span class="flow-arrow">&rarr;</span>
+            <span class="flow-step pill-purple">
+              <span data-i18n="en">Import</span>
+              <span data-i18n="zh-CN">导入</span>
+              <span data-i18n="zh-TW">匯入</span>
+            </span>
+            <span class="flow-arrow">&rarr;</span>
+            <span class="flow-step bold">
+              <span data-i18n="en">Obsidian notes</span>
+              <span data-i18n="zh-CN">Obsidian 笔记</span>
+              <span data-i18n="zh-TW">Obsidian 筆記</span>
+            </span>
+          </div>
+          <div class="cta-row">
+            <a class="btn btn-primary" href="#how">
+              <span data-i18n="en">Install the plugin</span>
+              <span data-i18n="zh-CN">安装插件</span>
+              <span data-i18n="zh-TW">安裝外掛</span>
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
+            </a>
+            <a class="btn btn-ghost" href="https://github.com/mykyquan/kindle-local-sync" target="_blank" rel="noopener">
+              <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38l-.01-1.33c-2.23.48-2.7-1.07-2.7-1.07-.36-.93-.89-1.18-.89-1.18-.73-.5.05-.49.05-.49.81.06 1.23.83 1.23.83.72 1.23 1.88.87 2.34.67.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.83-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.52.56.83 1.28.83 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48l-.01 2.19c0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+              <span data-i18n="en">View source</span>
+              <span data-i18n="zh-CN">查看源码</span>
+              <span data-i18n="zh-TW">查看原始碼</span>
+            </a>
+          </div>
+
+          <div class="hero-foot">
+            <span data-i18n="en">No Amazon login &middot; no telemetry &middot; nothing leaves your machine</span>
+            <span data-i18n="zh-CN">无需登录亚马逊 &middot; 无遥测 &middot; 数据留在本地</span>
+            <span data-i18n="zh-TW">無需登入亞馬遜 &middot; 無遙測 &middot; 資料留在本地</span>
+          </div>
+        </div>
+        
+        <!-- R: Demo Image -->
+        <div class="hero-image-content reveal-zoom">
+          <div class="hero-image-wrapper">
+            <div class="shot glass-panel">
+              <img src="assets/hero-demo.webp" width="732" height="366" decoding="async" alt="Running Sync local kindle highlights in Obsidian">
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SAFETY + OUTPUT (Moved Up for trust) -->
+    <section id="safe" class="section-spacing bg-subtle">
+      <div class="container">
+        <div class="text-center-wrapper reveal-fade-up">
+            <h2 class="section-title">
+              <span data-i18n="en">Careful with your notes, by design</span>
+              <span data-i18n="zh-CN">设计上谨慎对待您的笔记</span>
+              <span data-i18n="zh-TW">設計上謹慎對待您的筆記</span>
+            </h2>
+        </div>
+        
+        <div class="features-layout">
+          <div class="features-list reveal-slide-right">
+            <div class="feature-item">
+              <div class="feature-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+              </div>
+              <div class="feature-content">
+                <span data-i18n="en"><b>Nothing is written until you finish.</b> Every highlight is yours to approve, by book or one at a time.</span>
+                <span data-i18n="zh-CN"><b>在您完成之前不会写入任何内容。</b> 无论是整本还是逐条，每个标注都需您批准。</span>
+                <span data-i18n="zh-TW"><b>在您完成之前不會寫入任何內容。</b> 無論是整本還是逐條，每個標註都需您批准。</span>
+              </div>
+            </div>
+            
+            <div class="feature-item">
+              <div class="feature-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              </div>
+              <div class="feature-content">
+                <span data-i18n="en"><b>Your own writing is fenced off.</b> Only the managed region is rewritten; in doubt it leaves the book untouched.</span>
+                <span data-i18n="zh-CN"><b>您自己的写作受到保护。</b> 仅重写托管区域；遇到不确定情况，则保持书籍内容原封不动。</span>
+                <span data-i18n="zh-TW"><b>您自己的寫作受到保護。</b> 僅重寫託管區域；遇到不確定情況，則保持書籍內容原封不動。</span>
+              </div>
+            </div>
+            
+            <div class="feature-item">
+              <div class="feature-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+              </div>
+              <div class="feature-content">
+                <span data-i18n="en"><b>Every decision is reversible.</b> Undo an Ignore any time, or reconnect notes you already have after a reinstall.</span>
+                <span data-i18n="zh-CN"><b>每个决定都可撤销。</b> 随时撤销“忽略”，或在重新安装后重新连接已有笔记。</span>
+                <span data-i18n="zh-TW"><b>每個決定都可撤銷。</b> 隨時撤銷「忽略」，或在重新安裝後重新連接已有筆記。</span>
+              </div>
+            </div>
+            
+            <div class="feature-item">
+              <div class="feature-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h20"/><circle cx="12" cy="12" r="10"/><path d="m3 3 18 18"/></svg>
+              </div>
+              <div class="feature-content">
+                <span data-i18n="en"><b>Offline by construction.</b> No account, no Amazon API, no Readwise, no telemetry, no network requests.</span>
+                <span data-i18n="zh-CN"><b>天然离线设计。</b> 无需账户，不使用亚马逊 API，无需 Readwise，无遥测，也无网络请求。</span>
+                <span data-i18n="zh-TW"><b>天然離線設計。</b> 無需帳戶，不使用亞馬遜 API，無需 Readwise，無遙測，也無網路請求。</span>
+              </div>
+            </div>
+          </div>
+          
+          
+        </div>
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section id="how" class="section-spacing">
+      <div class="container">
+        <div class="text-center-wrapper reveal-fade-up">
+            <h2 class="section-title">
+              <span data-i18n="en">Four steps, then it gets quiet</span>
+              <span data-i18n="zh-CN">只需四步，然后便默默运行</span>
+              <span data-i18n="zh-TW">只需四步，然後便默默執行</span>
+            </h2>
+        </div>
+        
+        <div class="steps-grid reveal-fade-up">
+          <div class="step-card glass-panel">
+            <span class="step-number">1</span>
+            <h3 class="step-title">
+              <span data-i18n="en">Install &amp; Connect</span>
+              <span data-i18n="zh-CN">安装并连接</span>
+              <span data-i18n="zh-TW">安裝並連接</span>
+            </h3>
+            <p class="step-desc">
+              <span data-i18n="en">Install from Community Plugins, then plug in your Kindle via USB.</span>
+              <span data-i18n="zh-CN">从社区插件安装，然后通过 USB 连接您的 Kindle。</span>
+              <span data-i18n="zh-TW">從社群外掛安裝，然後透過 USB 連接您的 Kindle。</span>
+            </p>
+          </div>
+          <div class="step-card glass-panel">
+            <span class="step-number">2</span>
+            <h3 class="step-title">
+              <span data-i18n="en">Check Settings</span>
+              <span data-i18n="zh-CN">检查设置</span>
+              <span data-i18n="zh-TW">檢查設定</span>
+            </h3>
+            <p class="step-desc">
+              <span data-i18n="en">Point the plugin to your Kindle's <code>My Clippings.txt</code> file.</span>
+              <span data-i18n="zh-CN">将插件指向您的 Kindle 的 <code>My Clippings.txt</code> 文件。</span>
+              <span data-i18n="zh-TW">將外掛指向您的 Kindle 的 <code>My Clippings.txt</code> 檔案。</span>
+            </p>
+          </div>
+          <div class="step-card glass-panel">
+            <span class="step-number">3</span>
+            <h3 class="step-title">
+              <span data-i18n="en">Run the sync</span>
+              <span data-i18n="zh-CN">运行同步</span>
+              <span data-i18n="zh-TW">執行同步</span>
+            </h3>
+            <p class="step-desc">
+              <span data-i18n="en">Click the ribbon icon or run <span class="kbd">Sync local kindle highlights</span>.</span>
+              <span data-i18n="zh-CN">点击侧边栏图标或运行 <span class="kbd">Sync local kindle highlights</span>。</span>
+              <span data-i18n="zh-TW">點擊側邊欄圖示或執行 <span class="kbd">Sync local kindle highlights</span>。</span>
+            </p>
+          </div>
+          <div class="step-card glass-panel">
+            <span class="step-number">4</span>
+            <h3 class="step-title">
+              <span data-i18n="en">Review &amp; Finish</span>
+              <span data-i18n="zh-CN">审阅并完成</span>
+              <span data-i18n="zh-TW">審閱並完成</span>
+            </h3>
+            <p class="step-desc">
+              <span data-i18n="en">A summary reports what was imported, skipped or ignored.</span>
+              <span data-i18n="zh-CN">摘要报告将显示已导入、跳过或忽略的内容。</span>
+              <span data-i18n="zh-TW">摘要報告將顯示已匯入、跳過或忽略的內容。</span>
+            </p>
+          </div>
+        </div>
+        <div class="screenshots-grid reveal-fade-up">
+          <div class="screenshot-item">
+            <div class="shot glass-panel">
+              <img src="assets/shot-en-1.webp" width="1300" height="858" decoding="async" alt="First Sync Preview" loading="lazy" data-i18n="en">
+<img src="assets/shot-cn-1.webp" width="1954" height="1300" decoding="async" alt="First Sync Preview" loading="lazy" data-i18n="zh-CN">
+<img src="assets/shot-cn-1.webp" width="1954" height="1300" decoding="async" alt="First Sync Preview" loading="lazy" data-i18n="zh-TW">
+            </div>
+            <p class="shot-cap">
+              <span data-i18n="en">Search and filter, decide per book.</span>
+              <span data-i18n="zh-CN">搜索并筛选，逐书决定。</span>
+              <span data-i18n="zh-TW">搜尋並篩選，逐書決定。</span>
+            </p>
+          </div>
+          <div class="screenshot-item">
+            <div class="shot glass-panel">
+              <img src="assets/shot-en-2.webp" width="1300" height="839" decoding="async" alt="Reviewing one book's highlights" loading="lazy" data-i18n="en">
+<img src="assets/shot-cn-2.webp" width="1944" height="1518" decoding="async" alt="Reviewing one book's highlights" loading="lazy" data-i18n="zh-CN">
+<img src="assets/shot-cn-2.webp" width="1944" height="1518" decoding="async" alt="Reviewing one book's highlights" loading="lazy" data-i18n="zh-TW">
+            </div>
+            <p class="shot-cap">
+              <span data-i18n="en">Import keeps it &middot; Skip returns next sync &middot; Ignore stays out until you undo it.</span>
+              <span data-i18n="zh-CN">“导入”可保留内容 &middot; “跳过”则留待下次同步 &middot; “忽略”则永久排除，除非撤销。</span>
+              <span data-i18n="zh-TW">「匯入」可保留內容 &middot; 「跳過」則留待下次同步 &middot; 「忽略」則永久排除，除非撤銷。</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+  </main>
+
+  <footer class="footer">
+    <div class="container foot-container">
+      <p class="copyright">
+        <span data-i18n="en">Kindle Local Sync v0.1.4 &middot; MIT License &middot; by My Ky Quan</span>
+        <span data-i18n="zh-CN">Kindle Local Sync v0.1.4 &middot; MIT 许可证 &middot; 作者 My Ky Quan</span>
+        <span data-i18n="zh-TW">Kindle Local Sync v0.1.4 &middot; MIT 授權條款 &middot; 作者 My Ky Quan</span>
+      </p>
+      <div class="footer-links">
+        <a href="https://github.com/mykyquan/kindle-local-sync" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://github.com/mykyquan/kindle-local-sync/issues" target="_blank" rel="noopener">Issues</a>
+        <a href="https://github.com/mykyquan/kindle-local-sync/blob/main/docs/ARCHITECTURE.md" target="_blank" rel="noopener">Architecture</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
