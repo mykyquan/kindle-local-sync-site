@@ -53,19 +53,21 @@ python3 -m venv venv && ./venv/bin/pip install pillow
 
 ## Deploying
 
-The site is plain static files, so any host that serves a directory will do — GitHub Pages,
-Netlify, Cloudflare Pages. `.nojekyll` is included so GitHub Pages serves the tree as-is rather
-than running it through Jekyll.
+The production target is the GitHub Pages project URL:
+`https://mykyquan.github.io/kindle-local-sync-site/`.
 
-Two things need a real domain before they work, both marked `TODO` at the top of `index.html`:
+The site is designed to deploy directly from the repository root. In the repository's GitHub
+Pages settings, choose **Deploy from a branch**, select `main`, and select `/(root)`. `.nojekyll`
+keeps GitHub Pages from running the files through Jekyll. All local asset paths are relative so
+they continue to work under the `/kindle-local-sync-site/` project subpath.
 
-- **`canonical`, `og:url` and `og:image`** are placeholders (`https://DOMAIN/`). They need absolute
-  URLs, so they cannot be filled in until the domain is known. Until then, links shared on social
-  media will not show a preview image. Once set, switch `twitter:card` to `summary_large_image`.
-- **`hreflang`** cannot be declared at all as things stand. The three languages share one URL and
-  are switched client-side, so search engines will only index the English copy. Fixing it means
-  giving each language its own URL (`/`, `/zh-cn/`, `/zh-tw/`), which is a restructure rather than
-  a metadata change.
+The canonical and social preview URLs in `index.html` use that project URL. If the repository is
+renamed or the Pages source changes, update those absolute URLs at the same time.
+
+**Known multilingual SEO limitation:** `hreflang` cannot be declared as things stand. The three
+languages share one URL and are switched client-side, so search engines will primarily index the
+English metadata. Fixing it means giving each language its own URL (`/`, `/zh-cn/`, `/zh-tw/`),
+which is a restructure rather than a metadata-only change.
 
 ## License
 

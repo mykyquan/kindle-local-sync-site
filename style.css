@@ -55,6 +55,7 @@ body {
   overflow-x: hidden;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
+body.menu-open { overflow: hidden; }
 
 a { color: inherit; text-decoration: none; transition: var(--transition); }
 img { max-width: 100%; height: auto; display: block; }
@@ -63,6 +64,7 @@ button { background: none; border: none; cursor: pointer; font: inherit; color: 
 .container { max-width: 1024px; margin: 0 auto; padding: 0 24px; }
 .section-spacing { padding: 40px 0; }
 .bg-subtle { background-color: var(--bg-secondary); }
+#top, #safe, #how { scroll-margin-top: 80px; }
 
 /* Typography */
 h1, h2, h3, h4 { line-height: 1.2; font-weight: 700; letter-spacing: -0.02em; font-family: 'Poppins', var(--font-sans); }
@@ -178,7 +180,7 @@ h1, h2, h3, h4 { line-height: 1.2; font-weight: 700; letter-spacing: -0.02em; fo
 .kbd { font-family: var(--font-mono); font-size: 0.75rem; padding: 2px 6px; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-primary); }
 
 /* Screenshots */
-.screenshots-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 32px; }
+.screenshots-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); gap: 32px; }
 .screenshot-item { display: flex; flex-direction: column; gap: 16px; }
 .shot-cap { text-align: center; font-size: 0.875rem; color: var(--text-secondary); }
 
@@ -296,6 +298,7 @@ h1, h2, h3, h4 { line-height: 1.2; font-weight: 700; letter-spacing: -0.02em; fo
 
 @media (max-width: 960px) {
   .hero-split { grid-template-columns: 1fr; text-align: center; }
+  .hero-text-content, .hero-image-content { min-width: 0; }
   .hero-text-content { align-items: center; }
   .hero-text-content .cta-row, .hero-text-content .badges, .hero-text-content .hero-foot { justify-content: center; align-items: center; }
   .bottom-split-layout { grid-template-columns: 1fr; gap: 48px; }
@@ -303,6 +306,8 @@ h1, h2, h3, h4 { line-height: 1.2; font-weight: 700; letter-spacing: -0.02em; fo
 }
 @media (max-width: 600px) {
   .bottom-split-col .faq-list { grid-template-columns: 1fr; }
+  .foot-container { flex-wrap: wrap; overflow: visible; white-space: normal; }
+  .copyright { width: 100%; }
 }
 
 /* Adjustments for the image in the right column */
@@ -313,7 +318,7 @@ h1, h2, h3, h4 { line-height: 1.2; font-weight: 700; letter-spacing: -0.02em; fo
 
 .hero-text-content { min-width: 480px; }
 @media (max-width: 960px) {
-  .hero-text-content { min-width: unset; width: 100%; }
+  .hero-text-content { min-width: 0; width: 100%; }
   .hero-image-wrapper { width: 100%; transform: none !important; }
   .cta-row { flex-wrap: nowrap; overflow-x: auto; white-space: nowrap; -ms-overflow-style: none; scrollbar-width: none; justify-content: center; }
 }
@@ -349,6 +354,7 @@ h1, h2, h3, h4 { line-height: 1.2; font-weight: 700; letter-spacing: -0.02em; fo
   border-radius: 12px;
   border: 1px solid var(--border-color);
   width: fit-content;
+  max-width: 100%;
 }
 .flow-step { color: var(--text-primary); font-weight: 500; }
 .flow-step.mono { font-family: var(--font-mono); color: var(--text-secondary); font-size: 0.85rem; }
@@ -369,6 +375,19 @@ h1, h2, h3, h4 { line-height: 1.2; font-weight: 700; letter-spacing: -0.02em; fo
 
 @media(max-width: 960px) {
   .hero-flow { margin: 0 auto 32px auto; justify-content: center; }
+}
+
+@media (max-width: 600px) {
+  .cta-row { flex-wrap: wrap; overflow: visible; white-space: normal; }
+  .cta-row .btn { flex: 1 1 100%; justify-content: center; }
+  .badges {
+    justify-content: flex-start !important;
+    flex-wrap: wrap;
+    overflow: visible;
+    white-space: normal;
+  }
+  .hero-flow { justify-content: flex-start; }
+  .footer-links { width: 100%; flex-wrap: wrap; row-gap: 8px; white-space: normal; }
 }
 
 .hero-flow::-webkit-scrollbar { display: none; }
@@ -392,6 +411,15 @@ body::after {
   background: radial-gradient(circle, rgba(253, 230, 138, 0.04) 0%, transparent 70%);
 }
 .btn-primary:hover { box-shadow: 0 0 20px rgba(99, 102, 241, 0.4); }
+
+@media (max-width: 1200px) {
+  .hero-image-wrapper { width: 100%; transform: none; }
+  .hero-image-wrapper:hover { transform: none !important; cursor: default; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-image-wrapper:hover { transform: none !important; }
+}
 
 /* Language Visibility */
 :root:lang(en) [data-i18n="zh-CN"],
