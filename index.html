@@ -13,20 +13,23 @@
 
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Kindle Local Sync" />
-  <meta property="og:locale" content="en" />
+  <meta property="og:locale" content="en_US" />
   <meta property="og:title" content="Kindle Local Sync — Kindle highlights into Obsidian, entirely offline" />
   <meta property="og:description" content="Plug in the Kindle. Keep what you want. One tidy Markdown note per book. No account, no cloud, no telemetry." />
-  <meta name="twitter:card" content="summary" />
+  <meta property="og:url" content="https://mykyquan.github.io/kindle-local-sync-site/" />
+  <meta property="og:image" content="https://mykyquan.github.io/kindle-local-sync-site/assets/shot-en-1.webp" />
+  <meta property="og:image:type" content="image/webp" />
+  <meta property="og:image:width" content="1300" />
+  <meta property="og:image:height" content="858" />
+  <meta property="og:image:alt" content="Kindle Local Sync first sync preview in Obsidian" />
+  <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Kindle Local Sync — Kindle highlights into Obsidian, entirely offline" />
   <meta name="twitter:description" content="Plug in the Kindle. Keep what you want. One tidy Markdown note per book. No account, no cloud, no telemetry." />
+  <meta name="twitter:image" content="https://mykyquan.github.io/kindle-local-sync-site/assets/shot-en-1.webp" />
+  <meta name="twitter:image:alt" content="Kindle Local Sync first sync preview in Obsidian" />
+  <link rel="canonical" href="https://mykyquan.github.io/kindle-local-sync-site/" />
 
-  <!-- TODO once the deploy domain is known — these all require absolute URLs:
-         <link rel="canonical" href="https://DOMAIN/" />
-         <meta property="og:url" content="https://DOMAIN/" />
-         <meta property="og:image" content="https://DOMAIN/assets/shot-en-1.webp" />
-       and then switch twitter:card above to "summary_large_image".
-
-       TODO hreflang: the three languages share one URL and are switched with CSS,
+  <!-- TODO hreflang: the three languages share one URL and are switched with CSS,
        so hreflang cannot be declared as-is — search engines will only index the
        English copy. Declaring it needs one real URL per language (e.g. /, /zh-cn/,
        /zh-tw/), which is an architecture change, not a metadata fix. -->
@@ -36,16 +39,16 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Poppins:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
-  <script src="script.js" defer></script>
+  <script src="script.js" defer onerror="document.documentElement.classList.remove('js')"></script>
 </head>
 <body>
   <header class="header">
     <div class="container nav-wrapper">
       <a class="brand" href="#top">
         <span class="brand-mark">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
           </svg>
         </span>
@@ -53,7 +56,7 @@
       </a>
       
       <div class="nav-controls">
-        <nav class="nav-links">
+        <nav class="nav-links" aria-label="Primary navigation">
           <a href="#how" class="nav-link">
             <span data-i18n="en">How it works</span>
             <span data-i18n="zh-CN">工作原理</span>
@@ -72,8 +75,8 @@
           EN
         </button>
 
-        <button class="menu-toggle" id="menuToggle" aria-label="Toggle mobile menu">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <button class="menu-toggle" id="menuToggle" aria-label="Toggle mobile menu" aria-expanded="false" aria-controls="mobileMenu">
+          <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
             <path d="M4 6h16M4 12h16M4 18h16"/>
           </svg>
         </button>
@@ -82,8 +85,8 @@
   </header>
 
   <!-- Mobile Menu Overlay -->
-  <div class="mobile-menu" id="mobileMenu">
-    <nav class="mobile-nav-links">
+  <div class="mobile-menu" id="mobileMenu" aria-hidden="true" inert>
+    <nav class="mobile-nav-links" aria-label="Mobile navigation">
       <a href="#how" class="mobile-nav-link">
         <span data-i18n="en">How it works</span>
         <span data-i18n="zh-CN">工作原理</span>
@@ -108,6 +111,11 @@
           <div class="badges">
             <span class="badge accent">Obsidian plugin</span>
             <span class="badge">v0.1.4</span>
+            <span class="badge">
+              <span data-i18n="en">Desktop only</span>
+              <span data-i18n="zh-CN">仅限桌面端</span>
+              <span data-i18n="zh-TW">僅限桌面版</span>
+            </span>
             <span class="badge">MIT</span>
           </div>
           
@@ -149,14 +157,14 @@
             </span>
           </div>
           <div class="cta-row">
-            <a class="btn btn-primary" href="#how">
+            <a class="btn btn-primary" href="https://obsidian.md/plugins?id=kindle-local-sync" target="_blank" rel="noopener">
               <span data-i18n="en">Install the plugin</span>
               <span data-i18n="zh-CN">安装插件</span>
               <span data-i18n="zh-TW">安裝外掛</span>
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
+              <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
             </a>
             <a class="btn btn-ghost" href="https://github.com/mykyquan/kindle-local-sync" target="_blank" rel="noopener">
-              <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38l-.01-1.33c-2.23.48-2.7-1.07-2.7-1.07-.36-.93-.89-1.18-.89-1.18-.73-.5.05-.49.05-.49.81.06 1.23.83 1.23.83.72 1.23 1.88.87 2.34.67.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.83-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.52.56.83 1.28.83 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48l-.01 2.19c0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+              <svg aria-hidden="true" focusable="false" viewBox="0 0 16 16" width="16" height="16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38l-.01-1.33c-2.23.48-2.7-1.07-2.7-1.07-.36-.93-.89-1.18-.89-1.18-.73-.5.05-.49.05-.49.81.06 1.23.83 1.23.83.72 1.23 1.88.87 2.34.67.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.83-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.52.56.83 1.28.83 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48l-.01 2.19c0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
               <span data-i18n="en">View source</span>
               <span data-i18n="zh-CN">查看源码</span>
               <span data-i18n="zh-TW">查看原始碼</span>
@@ -196,7 +204,7 @@
           <div class="features-list reveal-slide-right">
             <div class="feature-item">
               <div class="feature-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+                <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
               </div>
               <div class="feature-content">
                 <span data-i18n="en"><b>Nothing is written until you finish.</b> Every highlight is yours to approve, by book or one at a time.</span>
@@ -207,7 +215,7 @@
             
             <div class="feature-item">
               <div class="feature-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
               </div>
               <div class="feature-content">
                 <span data-i18n="en"><b>Your own writing is fenced off.</b> Only the managed region is rewritten; in doubt it leaves the book untouched.</span>
@@ -218,7 +226,7 @@
             
             <div class="feature-item">
               <div class="feature-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+                <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
               </div>
               <div class="feature-content">
                 <span data-i18n="en"><b>Every decision is reversible.</b> Undo an Ignore any time, or reconnect notes you already have after a reinstall.</span>
@@ -229,7 +237,7 @@
             
             <div class="feature-item">
               <div class="feature-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h20"/><circle cx="12" cy="12" r="10"/><path d="m3 3 18 18"/></svg>
+                <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h20"/><circle cx="12" cy="12" r="10"/><path d="m3 3 18 18"/></svg>
               </div>
               <div class="feature-content">
                 <span data-i18n="en"><b>Offline by construction.</b> No account, no Amazon API, no Readwise, no telemetry, no network requests.</span>
@@ -350,6 +358,7 @@
       </p>
       <div class="footer-links">
         <a href="https://github.com/mykyquan/kindle-local-sync" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://github.com/mykyquan/kindle-local-sync/releases/tag/0.1.4" target="_blank" rel="noopener">Release 0.1.4</a>
         <a href="https://github.com/mykyquan/kindle-local-sync/issues" target="_blank" rel="noopener">Issues</a>
         <a href="https://github.com/mykyquan/kindle-local-sync/blob/main/docs/ARCHITECTURE.md" target="_blank" rel="noopener">Architecture</a>
       </div>
