@@ -164,6 +164,121 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // Product media shares one viewport-aware preview behavior. Transforming the
+  // existing element keeps video playback and image requests unchanged.
+  const mediaPreviews = document.querySelectorAll('.media-preview');
+  const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let activePreview = null;
+
+  const getLayoutRect = (element) => {
+    let left = 0;
+    let top = 0;
+    let current = element;
+
+    while (current) {
+      left += current.offsetLeft;
+      top += current.offsetTop;
+      current = current.offsetParent;
+    }
+
+    return {
+      left: left - window.scrollX,
+      top: top - window.scrollY,
+      width: element.offsetWidth,
+      height: element.offsetHeight,
+    };
+  };
+
+  const getVisibleMedia = (preview) => [...preview.querySelectorAll('video, img')]
+    .find(media => getComputedStyle(media).display !== 'none' && media.getClientRects().length > 0);
+
+  const updatePreviewGeometry = (preview) => {
+    const media = getVisibleMedia(preview);
+    if (!media) return;
+
+    const rect = getLayoutRect(preview);
+    const headerBottom = document.querySelector('.header')?.getBoundingClientRect().bottom || 0;
+    const topInset = Math.max(16, headerBottom + 16);
+    const bottomInset = 16;
+    const availableHeight = Math.max(1, window.innerHeight - topInset - bottomInset);
+    const maxWidth = window.innerWidth * 0.9;
+    const maxHeight = Math.min(window.innerHeight * 0.8, availableHeight);
+    const naturalWidth = media instanceof HTMLVideoElement ? media.videoWidth : media.naturalWidth;
+    const naturalHeight = media instanceof HTMLVideoElement ? media.videoHeight : media.naturalHeight;
+    const intrinsicScale = naturalWidth && naturalHeight
+      ? Math.min(naturalWidth / media.clientWidth, naturalHeight / media.clientHeight)
+      : Infinity;
+    const scale = Math.max(1, Math.min(maxWidth / rect.width, maxHeight / rect.height, intrinsicScale));
+
+    if (scale <= 1.005) {
+      preview.style.setProperty('--preview-scale', '1');
+      preview.style.setProperty('--preview-x', '0px');
+      preview.style.setProperty('--preview-y', '0px');
+      preview.style.setProperty('--preview-control-scale', '1');
+      return;
+    }
+
+    const targetCenterX = window.innerWidth / 2;
+    const targetCenterY = topInset + availableHeight / 2;
+    const currentCenterX = rect.left + rect.width / 2;
+    const currentCenterY = rect.top + rect.height / 2;
+
+    preview.style.setProperty('--preview-scale', scale.toFixed(4));
+    preview.style.setProperty('--preview-x', `${(targetCenterX - currentCenterX).toFixed(2)}px`);
+    preview.style.setProperty('--preview-y', `${(targetCenterY - currentCenterY).toFixed(2)}px`);
+    preview.style.setProperty('--preview-control-scale', (1 / scale).toFixed(4));
+  };
+
+  const closePreview = () => {
+    if (!activePreview) return;
+    activePreview.classList.remove('is-previewing');
+    activePreview.closest('section')?.classList.remove('has-active-preview');
+    activePreview = null;
+  };
+
+  const openPreview = (preview) => {
+    if (!finePointer.matches || reducedMotion.matches) return;
+    if (activePreview && activePreview !== preview) closePreview();
+    activePreview = preview;
+    updatePreviewGeometry(preview);
+    preview.closest('section')?.classList.add('has-active-preview');
+    preview.classList.add('is-previewing');
+  };
+
+  mediaPreviews.forEach(preview => {
+    preview.addEventListener('pointerenter', event => {
+      if (event.pointerType !== 'touch') openPreview(preview);
+    });
+  });
+
+  document.addEventListener('pointermove', (event) => {
+    if (!activePreview) return;
+
+    const base = getLayoutRect(activePreview);
+    const transformed = activePreview.getBoundingClientRect();
+    const edge = 8;
+    const insidePreviewPath = event.clientX >= Math.min(base.left, transformed.left) - edge
+      && event.clientX <= Math.max(base.left + base.width, transformed.right) + edge
+      && event.clientY >= Math.min(base.top, transformed.top) - edge
+      && event.clientY <= Math.max(base.top + base.height, transformed.bottom) + edge;
+
+    if (!insidePreviewPath) closePreview();
+  });
+
+  const refreshActivePreview = () => {
+    if (activePreview) updatePreviewGeometry(activePreview);
+  };
+
+  window.addEventListener('resize', refreshActivePreview);
+  window.addEventListener('scroll', refreshActivePreview, { passive: true });
+  finePointer.addEventListener?.('change', () => {
+    if (!finePointer.matches) closePreview();
+  });
+  reducedMotion.addEventListener?.('change', () => {
+    if (reducedMotion.matches) closePreview();
+  });
+
   // Intersection Observer for Scroll Animations
   const observerOptions = {
     root: null,
