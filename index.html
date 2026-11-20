@@ -192,24 +192,22 @@
                 <source src="assets/hero-demo.mp4" type="video/mp4; codecs=avc1.640029">
                 <img src="assets/hero-demo-poster.webp" width="1920" height="962" decoding="async" alt="Running Sync local Kindle highlights in Obsidian">
               </video>
+              <button class="demo-motion-toggle" id="demoMotionToggle" type="button"
+                aria-label="Play demo" title="Play demo" data-state="play"
+                data-label-play-en="Play demo" data-label-play-zh-cn="播放演示" data-label-play-zh-tw="播放示範"
+                data-label-pause-en="Pause demo" data-label-pause-zh-cn="暂停演示" data-label-pause-zh-tw="暫停示範"
+                data-label-replay-en="Replay demo" data-label-replay-zh-cn="重新播放演示" data-label-replay-zh-tw="重新播放示範">
+                <span class="demo-control-icon demo-pause-icon" hidden>
+                  <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+                </span>
+                <span class="demo-control-icon demo-play-icon">
+                  <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="currentColor"><path d="m8 5 11 7-11 7z"/></svg>
+                </span>
+                <span class="demo-control-icon demo-replay-icon" hidden>
+                  <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v6h6"/><path d="M5.5 16a8 8 0 1 0 .5-9.5L4 10"/></svg>
+                </span>
+              </button>
             </div>
-            <button class="demo-motion-toggle" id="demoMotionToggle" type="button">
-              <span class="demo-pause-label">
-                <span data-i18n="en">Pause demo</span>
-                <span data-i18n="zh-CN">暂停演示</span>
-                <span data-i18n="zh-TW">暫停示範</span>
-              </span>
-              <span class="demo-play-label">
-                <span data-i18n="en">Play demo</span>
-                <span data-i18n="zh-CN">播放演示</span>
-                <span data-i18n="zh-TW">播放示範</span>
-              </span>
-              <span class="demo-replay-label" hidden>
-                <span data-i18n="en">Replay demo</span>
-                <span data-i18n="zh-CN">重新播放演示</span>
-                <span data-i18n="zh-TW">重新播放示範</span>
-              </span>
-            </button>
           </div>
         </div>
       </div>
