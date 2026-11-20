@@ -21,6 +21,10 @@ document.addEventListener('DOMContentLoaded', () => {
       langToggleBtn.textContent = lang.label;
       langToggleBtn.title = lang.next;
       langToggleBtn.setAttribute('aria-label', lang.next);
+
+      const demo = document.getElementById('heroDemo');
+      const localizedDemoLabel = demo?.getAttribute(`data-label-${lang.code.toLowerCase()}`);
+      if (localizedDemoLabel) demo.setAttribute('aria-label', localizedDemoLabel);
     });
   }
 
@@ -82,6 +86,65 @@ document.addEventListener('DOMContentLoaded', () => {
         setMenuOpen(false);
       }
     });
+  }
+
+  // Start the demo only when motion is welcome. The custom control follows the
+  // media element's real state, including autoplay rejection and completion.
+  const demoVideo = document.getElementById('heroDemo');
+  const demoMotionToggle = document.getElementById('demoMotionToggle');
+  const demoPauseLabel = demoMotionToggle?.querySelector('.demo-pause-label');
+  const demoPlayLabel = demoMotionToggle?.querySelector('.demo-play-label');
+  const demoReplayLabel = demoMotionToggle?.querySelector('.demo-replay-label');
+
+  if (demoVideo && demoMotionToggle) {
+    const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let userPaused = false;
+    let pausedForMotion = false;
+
+    const updateDemoControl = () => {
+      const isEnded = demoVideo.ended;
+      const isPlaying = !demoVideo.paused && !isEnded;
+      demoPauseLabel.hidden = !isPlaying;
+      demoPlayLabel.hidden = isPlaying || isEnded;
+      demoReplayLabel.hidden = !isEnded;
+    };
+
+    demoMotionToggle.addEventListener('click', () => {
+      if (!demoVideo.paused && !demoVideo.ended) {
+        userPaused = true;
+        demoVideo.pause();
+        return;
+      }
+
+      userPaused = false;
+      if (demoVideo.ended) demoVideo.currentTime = 0;
+      demoVideo.play().catch(updateDemoControl);
+    });
+
+    demoVideo.addEventListener('play', updateDemoControl);
+    demoVideo.addEventListener('pause', updateDemoControl);
+    demoVideo.addEventListener('ended', updateDemoControl);
+    demoVideo.addEventListener('error', () => {
+      demoMotionToggle.disabled = true;
+      updateDemoControl();
+    });
+
+    const handleMotionPreference = (event) => {
+      if (event.matches) {
+        pausedForMotion = !demoVideo.paused;
+        demoVideo.pause();
+      } else if (pausedForMotion && !userPaused) {
+        pausedForMotion = false;
+        demoVideo.play().catch(updateDemoControl);
+      }
+    };
+
+    motionPreference.addEventListener?.('change', handleMotionPreference);
+    updateDemoControl();
+
+    if (!motionPreference.matches) {
+      demoVideo.play().catch(updateDemoControl);
+    }
   }
 
   // Intersection Observer for Scroll Animations
