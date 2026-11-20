@@ -25,6 +25,14 @@ document.addEventListener('DOMContentLoaded', () => {
       const demo = document.getElementById('heroDemo');
       const localizedDemoLabel = demo?.getAttribute(`data-label-${lang.code.toLowerCase()}`);
       if (localizedDemoLabel) demo.setAttribute('aria-label', localizedDemoLabel);
+
+      const demoControl = document.getElementById('demoMotionToggle');
+      const controlState = demoControl?.dataset.state || 'play';
+      const localizedControlLabel = demoControl?.getAttribute(`data-label-${controlState}-${lang.code.toLowerCase()}`);
+      if (localizedControlLabel) {
+        demoControl.setAttribute('aria-label', localizedControlLabel);
+        demoControl.title = localizedControlLabel;
+      }
     });
   }
 
@@ -92,9 +100,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // media element's real state, including autoplay rejection and completion.
   const demoVideo = document.getElementById('heroDemo');
   const demoMotionToggle = document.getElementById('demoMotionToggle');
-  const demoPauseLabel = demoMotionToggle?.querySelector('.demo-pause-label');
-  const demoPlayLabel = demoMotionToggle?.querySelector('.demo-play-label');
-  const demoReplayLabel = demoMotionToggle?.querySelector('.demo-replay-label');
+  const demoPauseIcon = demoMotionToggle?.querySelector('.demo-pause-icon');
+  const demoPlayIcon = demoMotionToggle?.querySelector('.demo-play-icon');
+  const demoReplayIcon = demoMotionToggle?.querySelector('.demo-replay-icon');
 
   if (demoVideo && demoMotionToggle) {
     const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -104,9 +112,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const updateDemoControl = () => {
       const isEnded = demoVideo.ended;
       const isPlaying = !demoVideo.paused && !isEnded;
-      demoPauseLabel.hidden = !isPlaying;
-      demoPlayLabel.hidden = isPlaying || isEnded;
-      demoReplayLabel.hidden = !isEnded;
+      const state = isEnded ? 'replay' : isPlaying ? 'pause' : 'play';
+      const language = document.documentElement.lang.toLowerCase();
+      const label = demoMotionToggle.getAttribute(`data-label-${state}-${language}`);
+
+      demoMotionToggle.dataset.state = state;
+      demoPauseIcon.hidden = state !== 'pause';
+      demoPlayIcon.hidden = state !== 'play';
+      demoReplayIcon.hidden = state !== 'replay';
+      if (label) {
+        demoMotionToggle.setAttribute('aria-label', label);
+        demoMotionToggle.title = label;
+      }
     };
 
     demoMotionToggle.addEventListener('click', () => {
