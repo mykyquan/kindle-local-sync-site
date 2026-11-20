@@ -178,12 +178,38 @@
           </div>
         </div>
         
-        <!-- R: Demo Image -->
+        <!-- R: Product demo -->
         <div class="hero-image-content reveal-zoom">
           <div class="hero-image-wrapper">
             <div class="shot glass-panel">
-              <img src="assets/hero-demo.webp" width="732" height="366" decoding="async" alt="Running Sync local kindle highlights in Obsidian">
+              <video id="heroDemo" width="1920" height="962" muted playsinline preload="metadata"
+                poster="assets/hero-demo-poster.webp"
+                aria-label="Running Sync local Kindle highlights in Obsidian"
+                data-label-en="Running Sync local Kindle highlights in Obsidian"
+                data-label-zh-cn="在 Obsidian 中运行 Kindle 本地高亮同步"
+                data-label-zh-tw="在 Obsidian 中執行 Kindle 本機螢光標記同步">
+                <source src="assets/hero-demo.webm" type="video/webm; codecs=vp9">
+                <source src="assets/hero-demo.mp4" type="video/mp4; codecs=avc1.640029">
+                <img src="assets/hero-demo-poster.webp" width="1920" height="962" decoding="async" alt="Running Sync local Kindle highlights in Obsidian">
+              </video>
             </div>
+            <button class="demo-motion-toggle" id="demoMotionToggle" type="button">
+              <span class="demo-pause-label">
+                <span data-i18n="en">Pause demo</span>
+                <span data-i18n="zh-CN">暂停演示</span>
+                <span data-i18n="zh-TW">暫停示範</span>
+              </span>
+              <span class="demo-play-label">
+                <span data-i18n="en">Play demo</span>
+                <span data-i18n="zh-CN">播放演示</span>
+                <span data-i18n="zh-TW">播放示範</span>
+              </span>
+              <span class="demo-replay-label" hidden>
+                <span data-i18n="en">Replay demo</span>
+                <span data-i18n="zh-CN">重新播放演示</span>
+                <span data-i18n="zh-TW">重新播放示範</span>
+              </span>
+            </button>
           </div>
         </div>
       </div>
@@ -240,9 +266,9 @@
                 <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h20"/><circle cx="12" cy="12" r="10"/><path d="m3 3 18 18"/></svg>
               </div>
               <div class="feature-content">
-                <span data-i18n="en"><b>Offline by construction.</b> No account, no Amazon API, no Readwise, no telemetry, no network requests.</span>
-                <span data-i18n="zh-CN"><b>天然离线设计。</b> 无需账户，不使用亚马逊 API，无需 Readwise，无遥测，也无网络请求。</span>
-                <span data-i18n="zh-TW"><b>天然離線設計。</b> 無需帳戶，不使用亞馬遜 API，無需 Readwise，無遙測，也無網路請求。</span>
+                <span data-i18n="en"><b>Offline by design.</b> No account, no Amazon API, no Readwise, no telemetry, no network requests.</span>
+                <span data-i18n="zh-CN"><b>专为离线使用而设计。</b> 无需账户，不使用亚马逊 API，无需 Readwise，无遥测，也无网络请求。</span>
+                <span data-i18n="zh-TW"><b>專為離線使用而設計。</b> 無需帳戶，不使用亞馬遜 API，無需 Readwise，無遙測，也無網路請求。</span>
               </div>
             </div>
           </div>
